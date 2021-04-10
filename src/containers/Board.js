@@ -1,3 +1,4 @@
+import { render } from '@testing-library/react';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import Lane from '../components/Lane/Lane';
@@ -13,25 +14,49 @@ const BoardWrapper = styled.div`
   }
 `;
 
+class Board extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      tickets: []
+    };
+  }
 
-// const lanes = [
-//     { id: 1, title: 'To Do' },
-//     { id: 2, title: 'In Progress' },
-//     { id: 3, title: 'Review' },
-//     { id: 4, title: 'Done' },
-// ];
+  componentDidUpdate(prevProps) {
+    if (prevProps.data !== this.props.data) {
+      this.setState(
+        {
+          tickets: this.props.data
+        }
+      );
+    }
+  }
 
-const Board = ({ lanes, loading, error, data }) => (
-    <BoardWrapper>
-        {lanes.map(lane => (
+  onDragStart = (e, id) => {
+    e.dataTransfer.setData('id', id);
+  };
+
+  render() {
+    const { lanes, loading, error } = this.props;
+    return (
+      <BoardWrapper>
+        {lanes.map(
+          lane => (
             <Lane key={lane.id}
-                title={lane.title}
-                loading={loading}
-                error={error}
-                tickets={data.filter(ticket => ticket.lane === lane.id)} />
-        ))}
-    </BoardWrapper>
-);
+              title={lane.title}
+              loading={loading}
+              error={error}
+              onDragStart={this.onDragStart}
+              tickets={
+                this.state.tickets.filter(
+                  ticket => ticket.lane === lane.id
+                )
+              } />
+          ))}
+      </BoardWrapper>
+    );
+  }
+}
 
 
 
