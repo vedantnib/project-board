@@ -1,4 +1,3 @@
-import { render } from '@testing-library/react';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import Lane from '../components/Lane/Lane';
@@ -14,7 +13,7 @@ const BoardWrapper = styled.div`
   }
 `;
 
-class Board extends React.Component {
+class Board extends Component {
   constructor() {
     super();
     this.state = {
@@ -36,6 +35,26 @@ class Board extends React.Component {
     e.dataTransfer.setData('id', id);
   };
 
+  onDragOver = e => {
+    e.preventDefault();
+  }
+
+  onDrop = (e, laneId) => {
+    const id = e.dataTransfer.getData('id');
+
+    const tickets = this.state.tickets.filter(ticket => {
+      if (ticket.id === parseInt(id)) {
+        ticket.lane = laneId;
+      }
+      return ticket;
+    });
+
+    this.setState({
+      ...this.state,
+      tickets,
+    });
+  }
+
   render() {
     const { lanes, loading, error } = this.props;
     return (
@@ -43,10 +62,13 @@ class Board extends React.Component {
         {lanes.map(
           lane => (
             <Lane key={lane.id}
+              laneId={lane.id}
               title={lane.title}
               loading={loading}
               error={error}
               onDragStart={this.onDragStart}
+              onDragOver={this.onDragOver}
+              onDrop={this.onDrop}
               tickets={
                 this.state.tickets.filter(
                   ticket => ticket.lane === lane.id

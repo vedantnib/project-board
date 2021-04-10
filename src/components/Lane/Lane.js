@@ -30,14 +30,18 @@ const Title = styled.h2`
   border-bottom: 1px solid darkGray;
 `;
 
-const Lane = ({ title, loading, error, tickets }) => (
-    <LaneWrapper>
-        <Title>{title}</Title>
-        {(loading || error) && <Alert>{loading ? 'Loading' : error}</Alert>}
-        <TicketWrapper>
-            {tickets.map(ticket => <Ticket key={ticket.id} ticket={ticket} />)}
-        </TicketWrapper>
-    </LaneWrapper>
+const Lane = ({ laneId, title, loading, error, onDragStart, onDragOver, onDrop, tickets }) => (
+  <LaneWrapper 
+  onDragOver = {onDragOver}
+  onDrop={e => onDrop(e, laneId)}>
+    <Title>{title}</Title>
+    {(loading || error) && <Alert>{loading ? 'Loading' : error}</Alert>}
+    <TicketWrapper>
+      {tickets.map(
+        ticket =>
+          <Ticket key={ticket.id} onDragStart={onDragStart} ticket={ticket} />)}
+    </TicketWrapper>
+  </LaneWrapper>
 );
 
 export default Lane;
